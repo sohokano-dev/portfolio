@@ -31,19 +31,19 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-bg px-5 py-10 text-text">
-      <div className="w-full max-w-sm rounded-card border border-border bg-bg2 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+    <main className="flex min-h-screen items-center justify-center bg-bg-900 px-5 py-10 text-text-100">
+      <div className="w-full max-w-sm rounded-card border border-border bg-bg-800 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
         <div className="mb-6">
           <h1 className="text-3xl font-semibold leading-[1.2]">
             Password Required
           </h1>
-          <p className="mt-3 text-sm leading-[1.8] text-dim">
+          <p className="mt-3 text-sm leading-[1.8] text-text-70">
             閲覧するにはパスワードを入力してください。
           </p>
         </div>
 
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-          <label className="text-xs uppercase text-muted" htmlFor="password">
+          <label className="text-xs uppercase text-text-50" htmlFor="password">
             Password
           </label>
           <input
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 setError("");
               }
             }}
-            className="h-11 rounded-lg border border-border bg-neutral-950 px-3 text-text outline-none transition-colors placeholder:text-muted focus:border-neutral-700"
+            className="h-11 rounded-lg border border-border bg-neutral-950 px-3 text-text-100 outline-none transition-colors placeholder:text-text-50 focus:border-neutral-700"
             placeholder="Enter password"
           />
           {error ? (

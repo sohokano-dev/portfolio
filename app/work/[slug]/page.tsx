@@ -36,7 +36,7 @@ export default async function WorkPage({ params }: WorkPageProps) {
   return (
     <main className="px-5 py-12 md:px-10 md:py-16">
       <article className="mx-auto flex max-w-3xl flex-col gap-6">
-        <div className="[&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:leading-[1.2] [&_h1]:text-text [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-[1.2] [&_h2]:text-text [&_p]:text-sm [&_p]:leading-[1.8] [&_p]:text-dim">
+        <div className="[&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:leading-[1.2] [&_h1]:text-text-100 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-[1.2] [&_h2]:text-text-100 [&_p]:text-sm [&_p]:leading-[1.8] [&_p]:text-text-70">
           <Content />
         </div>
       </article>

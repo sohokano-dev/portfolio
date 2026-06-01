@@ -1,3 +1,19 @@
+@font-face {
+  font-family: "LINE Seed JP";
+  src: url("./fonts/LINESeedJP_OTF_Rg.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "LINE Seed JP";
+  src: url("./fonts/LINESeedJP_OTF_Bd.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,39 +27,20 @@
     padding: 0;
   }
 
-  :root {
-    --bg: #07090c;
-    --bg-deep: #020305;
-    --bg2: #101215;
-    --bg3: #16181d;
-    --bg4: #212429;
-    --ink: #f3f2ee;
-    --ink-dim: #a7a49e;
-    --ink-faint: #605d57;
-    --line: #ffffff14;
-    --line-2: #ffffff24;
-    --text: var(--ink);
-    --dim: var(--ink-dim);
-    --muted: var(--ink-faint);
-    --accent: #facf9e;
-    --border: var(--line);
-    --radius: 18px;
-    --gap: 8px;
-  }
-
   html {
     scroll-behavior: smooth;
-    background: var(--bg-deep);
+    background: #030712;
   }
 
   body {
     min-height: 100vh;
     overflow-x: hidden;
-    background: var(--bg-deep);
-    color: var(--ink);
+    background: #030712;
+    color: #f3f4f6;
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-family: "LINE Seed JP", system-ui, sans-serif;
     /* font-feature-settings: "palt" 1; */
     text-spacing-trim: trim-start;
   }

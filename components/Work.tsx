@@ -40,11 +40,11 @@ type Project = {
 const chips = [
   ["All", "24"],
   ["Product", "11"],
-  ["Mobile", "08"],
-  ["Brand & Web", "06"],
-  ["Systems", "04"],
-  ["Research", "03"],
-  ["Ongoing", "02"],
+  ["Mobile", "8"],
+  ["Brand & Web", "6"],
+  ["Systems", "4"],
+  ["Research", "3"],
+  ["Ongoing", "2"],
 ] as const;
 
 const defaultPalette = [
@@ -384,11 +384,11 @@ async function extractImagePalette(src: string) {
 
 // CSS Module で持ちにくいレスポンシブの列幅だけ、TSX 側でまとめて管理する。
 const sizeClassNames = {
-  xl: "col-span-8 max-[900px]:col-span-6",
-  wide: "col-span-8 max-[900px]:col-span-6",
-  lg: "max-[900px]:col-span-6 min-[640px]:max-[900px]:col-span-3",
-  md: "max-[900px]:col-span-6 min-[640px]:max-[900px]:col-span-3",
-  tall: "max-[900px]:col-span-6 min-[640px]:max-[900px]:col-span-3",
+  xl: "col-span-8 min-[1024px]:col-span-8 max-[1024px]:col-span-4",
+  wide: "col-span-8 min-[1024px]:col-span-8 max-[1024px]:col-span-4",
+  lg: "col-span-6 min-[1024px]:col-span-6 max-[1024px]:col-span-4",
+  md: "col-span-4 min-[1024px]:col-span-4 max-[1024px]:col-span-4",
+  tall: "col-span-6 min-[1024px]:col-span-6 max-[1024px]:col-span-4",
 } as const;
 
 const navLinkClassName =
@@ -398,7 +398,7 @@ const chipClassName =
   "flex items-center gap-2 whitespace-nowrap px-4 py-2 text-[12px] uppercase tracking-[0.12em]";
 
 const cardTitleClassName =
-  "text-[22px] font-medium leading-[1.2] text-text max-[520px]:text-[20px]";
+  "text-[22px] font-medium leading-[1.2] text-text-100";
 
 const cardClassName = "col-span-4 flex flex-col gap-3";
 
@@ -511,7 +511,7 @@ export function Work() {
       className={cn(
         styles.root,
         hovering && styles.isHovering,
-        "relative min-h-screen overflow-x-hidden text-text",
+        "relative min-h-screen overflow-x-hidden text-text-100",
       )}
     >
       <div
@@ -551,83 +551,55 @@ export function Work() {
       </div>
 
       <div className="relative z-[1]">
-        <header
-          className={cn(
-            styles.nav,
-            "sticky top-0 z-50 flex items-center justify-between gap-7 px-10 py-5 max-[900px]:px-5 max-[900px]:py-4",
-          )}
-        >
-          <div className="flex min-w-0 items-baseline gap-2">
-            <div className={cn(styles.logo, "shrink-0 text-[18px] font-bold")}>
-              soh okano<span>.</span>
-            </div>
-            <div className="whitespace-nowrap text-[10px] uppercase tracking-[0.12em] text-muted max-[1100px]:hidden">
-              Product Designer · Tokyo
-            </div>
+        {/* Fixed header with logo only */}
+        <div className="fixed left-0 top-0 right-0 z-50 w-full flex items-baseline gap-2 px-10 py-5 max-[640px]:px-5 max-[640px]:py-4 bg-slate-900/60 backdrop-blur-xl">
+          <div className={cn(styles.logo, "shrink-0 text-[18px] font-bold")}>
+            soh okano<span>.</span>
           </div>
-
-          <nav className="flex items-center gap-7 max-[1100px]:gap-4 max-[900px]:hidden" aria-label="Primary">
-            <a className={cn(styles.navLink, navLinkClassName)} href="#">
-              <span className="text-[10px]">01</span>Index
-            </a>
-            <a className={cn(styles.navLink, styles.navLinkActive, navLinkClassName)} href="#">
-              <span className="text-[10px]">02</span>Work
-            </a>
-            <a className={cn(styles.navLink, navLinkClassName)} href="#">
-              <span className="text-[10px]">03</span>About
-            </a>
-            <a className={cn(styles.navLink, navLinkClassName)} href="#">
-              <span className="text-[10px]">04</span>Journal
-            </a>
-            <a className={cn(styles.navLink, navLinkClassName)} href="#">
-              <span className="text-[10px]">05</span>Contact
-            </a>
-          </nav>
-
-        </header>
-
-        <div
-          className={cn(
-            styles.filterbar,
-            "sticky top-16 z-40 flex items-center justify-between gap-5 overflow-x-auto px-10 py-6 max-[900px]:top-14 max-[900px]:items-start max-[900px]:px-5 max-[900px]:py-4",
-          )}
-        >
-          <div className="flex shrink-0 flex-wrap gap-2 max-[900px]:flex-nowrap">
-            {chips.map(([label, count]) => (
-              <button
-                className={cn(styles.chip, chipClassName, activeChip === label && styles.chipActive)}
-                key={label}
-                onClick={() => setActiveChip(label)}
-                type="button"
-              >
-                {label} <span>{count}</span>
-              </button>
-            ))}
-          </div>
-          <div className="flex shrink-0 items-center gap-3 text-[12px] uppercase tracking-[0.08em] text-muted max-[900px]:hidden">
-            <span>Sort</span>
-            <span className={cn(styles.sort, "rounded-full px-3 py-2")}>Recent ↓</span>
+          <div className="whitespace-nowrap text-[10px] uppercase tracking-[0.12em] text-text-50">
+            Product Designer · Tokyo
           </div>
         </div>
 
-        <main className="p-[120px] max-[1100px]:px-10 max-[1100px]:py-20 max-[900px]:px-4 max-[900px]:pb-4 max-[900px]:pt-6">
+        {/* Header retained only for logo; chips moved below into gallery */}
+
+        <main className="p-[120px] max-[1024px]:px-10 max-[1024px]:py-20 max-[640px]:px-5 max-[640px]:pb-4 max-[640px]:pt-6">
+          {/* Filter placed above the gallery */}
+          <div className={cn(styles.filterbar, "mb-10 overflow-auto -mx-[120px] max-[1024px]:-mx-10 max-[640px]:-mx-5 max-[640px]:pt-20")}>
+            <div className="px-[120px] max-[1024px]:px-10 max-[640px]:px-5">
+              <div className="flex gap-2 items-center justify-start">
+                {chips.map(([label, count]) => (
+                  <button
+                    className={cn(styles.chip, chipClassName, activeChip === label && styles.chipActive)}
+                    key={label}
+                    onClick={() => setActiveChip(label)}
+                    type="button"
+                  >
+                    {label} <sup>{count}</sup>
+                  </button>
+                ))}
+                <div className="shrink-0 w-5" />
+              </div>
+            </div>
+          </div>
+
           <section
-            className="grid grid-cols-12 auto-rows-auto items-start gap-x-6 gap-y-10 max-[900px]:grid-cols-6 max-[900px]:gap-x-3 max-[900px]:gap-y-7"
+            className="grid grid-cols-4 min-[640px]:grid-cols-8 min-[1024px]:grid-cols-12 auto-rows-auto items-start gap-x-6 gap-y-10 max-[640px]:gap-x-3 max-[640px]:gap-y-7"
             aria-label="Selected work"
           >
             {/* カードごとに palette を切り替えながら、必要なら詳細ページへの導線も付ける。 */}
             {projects.map((project) => {
               const palette = imagePalettes[project.idx] ?? project.palette;
-              const cardStyle = {
-                "--c1": palette[0],
-                "--c2": palette[1],
+              const swatchStyle = {
+                background: palette[0],
+                backgroundImage: `linear-gradient(135deg, ${palette[0]}, ${palette[1]})`,
               } as CSSProperties;
               const cardClasses = cn(styles.cell, cardClassName, sizeClassNames[project.size]);
 
               // 記事リンクの有無にかかわらず、カード本体の見た目は共通化しておく。
               const cardBody = (
                 <>
-                  <div className={cn(styles.swatch, "relative aspect-[3/2] w-full overflow-hidden")}>
+                  <div className={cn(styles.swatch, "relative aspect-[3/2] w-full overflow-hidden")} style={swatchStyle}>
                     {project.img ? (
                       <Image
                         alt={stripTags(project.en)}
@@ -640,7 +612,7 @@ export function Work() {
                   </div>
 
                   <div className={cn(styles.info, "flex flex-col gap-2 px-[2px] pb-1 pt-[2px]")}>
-                    <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.1em] text-muted">
+                    <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.1em] text-text-50">
                       <span className={cn(styles.index, "tracking-[0]")}>
                         {project.idx} · {project.year}
                       </span>
@@ -663,11 +635,11 @@ export function Work() {
                       </span>
                     </div>
                     <h3 className={cardTitleClassName} dangerouslySetInnerHTML={{ __html: project.en }} />
-                    <div className="text-[12px] leading-[1.8] text-dim">{project.jp}</div>
+                    <div className="text-[12px] leading-[1.8] text-text-70">{project.jp}</div>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {project.tags.map((tag) => (
                         <span
-                          className="rounded-full border border-border px-2 py-1 text-[12px] uppercase tracking-[0.12em] text-muted"
+                          className="rounded-full border border-border px-2 py-1 text-[12px] uppercase tracking-[0.12em] text-text-50"
                           key={tag}
                         >
                           {tag}
@@ -689,7 +661,6 @@ export function Work() {
                     onFocus={() => activateProject(project)}
                     onMouseEnter={() => activateProject(project)}
                     onMouseLeave={releasePalette}
-                    style={cardStyle}
                   >
                     {cardBody}
                   </Link>
@@ -704,7 +675,6 @@ export function Work() {
                   onFocus={() => activateProject(project)}
                   onMouseEnter={() => activateProject(project)}
                   onMouseLeave={releasePalette}
-                  style={cardStyle}
                   tabIndex={0}
                 >
                   {cardBody}
@@ -714,8 +684,8 @@ export function Work() {
           </section>
         </main>
 
-        <footer className={cn(styles.footer, "mt-10 px-10 pb-10 pt-20 max-[900px]:px-5 max-[900px]:pb-8 max-[900px]:pt-16")}>
-          <div className="flex justify-between text-[12px] uppercase tracking-[0.12em] text-muted">
+        <footer className={cn(styles.footer, "mt-10 px-10 pb-10 pt-20 max-[640px]:px-5 max-[640px]:pb-8 max-[640px]:pt-16")}>
+          <div className="flex justify-between text-[12px] uppercase tracking-[0.12em] text-text-50">
             <span>© 2020 — 2026 · soh okano · all rights reserved</span>
           </div>
         </footer>

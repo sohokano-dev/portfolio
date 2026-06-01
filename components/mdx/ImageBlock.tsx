@@ -10,7 +10,7 @@ type ImageBlockProps = {
 
 export function ImageBlock({ src, alt, width, height, caption }: ImageBlockProps) {
   return (
-    <figure className="my-8 overflow-hidden rounded-card border border-border bg-bg2">
+    <figure className="my-8 overflow-hidden rounded-card border border-border bg-bg-800">
       <Image
         alt={alt}
         className="h-auto w-full object-cover"
@@ -20,7 +20,7 @@ export function ImageBlock({ src, alt, width, height, caption }: ImageBlockProps
         width={width}
       />
       {caption ? (
-        <figcaption className="border-t border-border px-4 py-3 text-sm leading-[1.8] text-dim">
+        <figcaption className="border-t border-border px-4 py-3 text-sm leading-[1.8] text-text-70">
           {caption}
         </figcaption>
       ) : null}

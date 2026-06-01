@@ -16,7 +16,7 @@ export function Gallery({ images }: GalleryProps) {
     <div className="my-8 grid grid-cols-1 gap-4 md:grid-cols-2">
       {images.map((image, index) => (
         <figure
-          className="overflow-hidden rounded-card border border-border bg-bg2"
+          className="overflow-hidden rounded-card border border-border bg-bg-800"
           key={`${image.src}-${index}`}
         >
           <Image

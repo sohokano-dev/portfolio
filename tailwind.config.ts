@@ -8,21 +8,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "var(--bg)",
-        bg2: "var(--bg2)",
-        bg3: "var(--bg3)",
-        bg4: "var(--bg4)",
-        text: "var(--text)",
-        dim: "var(--dim)",
-        muted: "var(--muted)",
-        accent: "var(--accent)",
-        border: "var(--border)",
+        bg: {
+          900: "#111827",
+          800: "#1f2937",
+          700: "#374151",
+          600: "#4b5563",
+        },
+        text: {
+          100: "#f3f4f6",
+          70: "#9ca3af",
+          50: "#6b7280",
+        },
+        accent: "#facf9e",
+        border: "#ffffff15",
       },
       borderRadius: {
-        card: "var(--radius)",
-      },
-      spacing: {
-        gap: "var(--gap)",
+        card: "16px",
       },
       keyframes: {
         ticker: {
