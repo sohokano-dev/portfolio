@@ -126,19 +126,6 @@
   content: "";
 }
 
-.availability {
-  color: var(--ink-faint);
-}
-
-.availability span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #4cd676;
-  box-shadow: 0 0 10px #4cd67699;
-  animation: pulse 2.2s infinite;
-}
-
 .filterbar {
   border-bottom: 1px solid var(--line);
   background: #02030580;
@@ -260,17 +247,6 @@
 .footer {
   border-top: 1px solid var(--line);
   color: var(--ink-dim);
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
 }
 
 @keyframes drift1 {

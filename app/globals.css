@@ -29,9 +29,6 @@
     --border: var(--line);
     --radius: 18px;
     --gap: 8px;
-    --font-body: var(--font-line-seed-jp), "Hiragino Kaku Gothic ProN", sans-serif;
-    --font-heading: var(--font-body);
-    --font-label: var(--font-body);
   }
 
   html {
@@ -44,7 +41,6 @@
     overflow-x: hidden;
     background: var(--bg-deep);
     color: var(--ink);
-    font-family: var(--font-body);
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

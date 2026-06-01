@@ -5,17 +5,16 @@ import "./globals.css";
 const lineSeedJp = localFont({
   src: [
     {
-      path: "./fonts/LINESeedJP-Regular.ttf",
+      path: "./fonts/LINESeedJP_OTF_Rg.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "./fonts/LINESeedJP-Bold.ttf",
+      path: "./fonts/LINESeedJP_OTF_Bd.woff2",
       weight: "700",
       style: "normal",
     },
   ],
-  variable: "--font-line-seed-jp",
   display: "swap",
 });
 
@@ -31,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={lineSeedJp.variable}>{children}</body>
+      <body className={lineSeedJp.className}>{children}</body>
     </html>
   );
 }

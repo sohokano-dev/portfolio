@@ -381,30 +381,6 @@ async function extractImagePalette(src: string) {
   return selected.slice(0, 4).map(toVividColor);
 }
 
-// ナビ右上の時刻表示。表示は JST 固定にしている。
-function useJstClock() {
-  const [clock, setClock] = useState("JST --:--");
-
-  useEffect(() => {
-    function tick() {
-      const time = new Date().toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-        timeZone: "Asia/Tokyo",
-      });
-
-      setClock(`JST ${time}`);
-    }
-
-    tick();
-    const id = window.setInterval(tick, 30000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  return clock;
-}
-
 // CSS Module で持ちにくいレスポンシブの列幅だけ、TSX 側でまとめて管理する。
 const sizeClassNames = {
   xl: "col-span-8 max-[900px]:col-span-6",
@@ -415,13 +391,13 @@ const sizeClassNames = {
 } as const;
 
 const navLinkClassName =
-  "flex items-center gap-2 font-[var(--font-label)] text-[14px] transition-colors";
+  "flex items-center gap-2 text-[14px] transition-colors";
 
 const chipClassName =
-  "flex items-center gap-2 whitespace-nowrap px-4 py-2 font-[var(--font-label)] text-[12px] uppercase tracking-[0.12em]";
+  "flex items-center gap-2 whitespace-nowrap px-4 py-2 text-[12px] uppercase tracking-[0.12em]";
 
 const cardTitleClassName =
-  "font-[var(--font-heading)] text-[22px] font-medium leading-[1.2] text-text max-[520px]:text-[20px]";
+  "text-[22px] font-medium leading-[1.2] text-text max-[520px]:text-[20px]";
 
 const cardClassName = "col-span-4 flex flex-col gap-3";
 
@@ -442,7 +418,6 @@ export function Work() {
   const hoverTimer = useRef<number | null>(null);
   const paletteTimer = useRef<number | null>(null);
   const activeProject = useRef<string | null>(null);
-  const clock = useJstClock();
 
   useEffect(() => {
     // ページ離脱時にタイマーを残さないように後始末する。
@@ -535,7 +510,7 @@ export function Work() {
       className={cn(
         styles.root,
         hovering && styles.isHovering,
-        "relative min-h-screen overflow-x-hidden font-[var(--font-body)] text-text",
+        "relative min-h-screen overflow-x-hidden text-text",
       )}
     >
       <div
@@ -585,8 +560,8 @@ export function Work() {
             <div className={cn(styles.logo, "shrink-0 text-[18px] font-bold")}>
               soh okano<span>.</span>
             </div>
-            <div className="whitespace-nowrap font-[var(--font-label)] text-[10px] uppercase tracking-[0.12em] text-muted max-[1100px]:hidden">
-              UI / UX Designer · Tokyo
+            <div className="whitespace-nowrap text-[10px] uppercase tracking-[0.12em] text-muted max-[1100px]:hidden">
+              Product Designer · Tokyo
             </div>
           </div>
 
@@ -608,13 +583,6 @@ export function Work() {
             </a>
           </nav>
 
-          <div className="flex shrink-0 items-center gap-5 font-[var(--font-label)] text-[10px] text-muted">
-            <span className="whitespace-nowrap max-[520px]:hidden">{clock}</span>
-            <span className={cn(styles.availability, "flex items-center gap-2 whitespace-nowrap max-[900px]:hidden")}>
-              <span />
-              Available · Q3 2026
-            </span>
-          </div>
         </header>
 
         <div
@@ -635,7 +603,7 @@ export function Work() {
               </button>
             ))}
           </div>
-          <div className="flex shrink-0 items-center gap-3 font-[var(--font-label)] text-[12px] uppercase tracking-[0.08em] text-muted max-[900px]:hidden">
+          <div className="flex shrink-0 items-center gap-3 text-[12px] uppercase tracking-[0.08em] text-muted max-[900px]:hidden">
             <span>Sort</span>
             <span className={cn(styles.sort, "rounded-full px-3 py-2")}>Recent ↓</span>
           </div>
@@ -671,7 +639,7 @@ export function Work() {
                   </div>
 
                   <div className={cn(styles.info, "flex flex-col gap-2 px-[2px] pb-1 pt-[2px]")}>
-                    <div className="flex items-center justify-between font-[var(--font-label)] text-[10px] uppercase tracking-[0.1em] text-muted">
+                    <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.1em] text-muted">
                       <span className={cn(styles.index, "tracking-[0]")}>
                         {project.idx} · {project.year}
                       </span>
@@ -698,7 +666,7 @@ export function Work() {
                     <div className="mt-1 flex flex-wrap gap-1">
                       {project.tags.map((tag) => (
                         <span
-                          className="rounded-full border border-border px-2 py-1 font-[var(--font-label)] text-[12px] uppercase tracking-[0.12em] text-muted"
+                          className="rounded-full border border-border px-2 py-1 text-[12px] uppercase tracking-[0.12em] text-muted"
                           key={tag}
                         >
                           {tag}
@@ -746,7 +714,7 @@ export function Work() {
         </main>
 
         <footer className={cn(styles.footer, "mt-10 px-10 pb-10 pt-20 max-[900px]:px-5 max-[900px]:pb-8 max-[900px]:pt-16")}>
-          <div className="flex justify-between font-[var(--font-label)] text-[12px] uppercase tracking-[0.12em] text-muted">
+          <div className="flex justify-between text-[12px] uppercase tracking-[0.12em] text-muted">
             <span>© 2020 — 2026 · soh okano · all rights reserved</span>
           </div>
         </footer>
