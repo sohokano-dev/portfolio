@@ -2,14 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
+import styles from "./Work.module.css";
 
+// 画像から抽出した色を HSL として扱うための型。
 type HslColor = {
   h: number;
   s: number;
   l: number;
 };
 
+// 近い色をまとめて集計するためのバケット。
 type ColorBucket = {
   count: number;
   r: number;
@@ -25,12 +29,14 @@ type Project = {
   idx: string;
   year: string;
   en: string;
+  href?: string;
   jp: string;
   tags: string[];
   img?: string;
   palette: string[];
 };
 
+// フィルタ UI の表示用ラベル。現状は見た目用で、絞り込みロジック自体はまだ持っていない。
 const chips = [
   ["All", "24"],
   ["Product", "11"],
@@ -48,8 +54,10 @@ const defaultPalette = [
   "oklch(0.7 0.18 30)",
 ];
 
+// hover 直後に即切り替えず、少しだけ間を置いて背景演出を滑らかに見せる。
 const PALETTE_HOVER_DELAY_MS = 180;
 
+// 一覧カードの表示内容。詳細ページがあるものだけ `href` を持たせる。
 const projects: Project[] = [
   {
     size: "xl",
@@ -86,7 +94,8 @@ const projects: Project[] = [
     idx: "03",
     year: "2024",
     en: "<em>D.LEAGUE</em> × ALT-RHYTHM",
-    jp: "ディーリーグ / 楽曲ジャケットシリーズ",
+    href: "/work/project",
+    jp: "「ディー」「リーグ・ああ」 / 楽曲ジャケットシリーズ",
     tags: ["Art Direction", "Music"],
     img: "/images/work/alt-rhythm.jpg",
     palette: [
@@ -204,10 +213,12 @@ function stripTags(value: string) {
   return value.replace(/<[^>]+>/g, "");
 }
 
+// 色補正の途中計算で値が暴れないように範囲へ収める。
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
+// 画像の代表色を扱いやすくするため、RGB を HSL に変換する。
 function rgbToHsl(r: number, g: number, b: number): HslColor {
   const red = r / 255;
   const green = g / 255;
@@ -237,6 +248,7 @@ function hueDistance(left: number, right: number) {
   return Math.min(diff, 360 - diff);
 }
 
+// 元画像の色を、そのままではなく少し鮮やかに補正して背景演出向けに使う。
 function toVividColor({ h, s, l }: HslColor) {
   const vividS = clamp(s * 1.35 + 0.16, 0.5, 0.92);
   const vividL = clamp(l < 0.35 ? l * 1.18 + 0.1 : l, 0.38, 0.72);
@@ -244,6 +256,7 @@ function toVividColor({ h, s, l }: HslColor) {
   return `hsl(${Math.round(h)} ${Math.round(vividS * 100)}% ${Math.round(vividL * 100)}%)`;
 }
 
+// Canvas へ描画できるよう、画像をクライアント側で読み込む。
 function loadPaletteImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new window.Image();
@@ -272,6 +285,7 @@ async function extractImagePalette(src: string) {
   const buckets = new Map<string, ColorBucket>();
   const { data } = context.getImageData(0, 0, size, size);
 
+  // 全ピクセルを見ると重いので、一定間隔で拾いながら大まかな傾向色を集める。
   for (let index = 0; index < data.length; index += 16) {
     const alpha = data[index + 3];
     if (alpha < 180) {
@@ -328,6 +342,7 @@ async function extractImagePalette(src: string) {
 
   const selected: HslColor[] = [];
 
+  // 近い色相ばかりに偏らないよう、ある程度離れた色を優先して拾う。
   for (const item of ranked) {
     const isDistinct = selected.every((color) => hueDistance(color.h, item.color.h) > 24);
     if (isDistinct || selected.length < 2) {
@@ -353,6 +368,7 @@ async function extractImagePalette(src: string) {
     return null;
   }
 
+  // 色数が足りない場合は、先頭色を基準に近い色を補って4色に揃える。
   const baseColor = selected[0];
   while (selected.length < 4) {
     selected.push({
@@ -365,6 +381,7 @@ async function extractImagePalette(src: string) {
   return selected.slice(0, 4).map(toVividColor);
 }
 
+// ナビ右上の時刻表示。表示は JST 固定にしている。
 function useJstClock() {
   const [clock, setClock] = useState("JST --:--");
 
@@ -388,10 +405,39 @@ function useJstClock() {
   return clock;
 }
 
-export function WorkPage() {
+// CSS Module で持ちにくいレスポンシブの列幅だけ、TSX 側でまとめて管理する。
+const sizeClassNames = {
+  xl: "col-span-8 max-[900px]:col-span-6",
+  wide: "col-span-8 max-[900px]:col-span-6",
+  lg: "max-[900px]:col-span-6 min-[640px]:max-[900px]:col-span-3",
+  md: "max-[900px]:col-span-6 min-[640px]:max-[900px]:col-span-3",
+  tall: "max-[900px]:col-span-6 min-[640px]:max-[900px]:col-span-3",
+} as const;
+
+const navLinkClassName =
+  "flex items-center gap-2 font-[var(--font-label)] text-[14px] transition-colors";
+
+const chipClassName =
+  "flex items-center gap-2 whitespace-nowrap px-4 py-2 font-[var(--font-label)] text-[12px] uppercase tracking-[0.12em]";
+
+const cardTitleClassName =
+  "font-[var(--font-heading)] text-[22px] font-medium leading-[1.2] text-text max-[520px]:text-[20px]";
+
+const cardClassName = "col-span-4 flex flex-col gap-3";
+
+// 条件付き className を見やすく組み立てるための小さなヘルパー。
+function cn(...classNames: Array<string | false | null | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
+
+export function Work() {
+  // 現状は見た目だけだが、将来的にフィルタを有効化しやすいよう state 化している。
   const [activeChip, setActiveChip] = useState("All");
+  // 背景の wash 演出に流し込む現在の4色。
   const [activePalette, setActivePalette] = useState(defaultPalette);
+  // 画像から後追いで抽出したパレットをカード ID ごとに保持する。
   const [imagePalettes, setImagePalettes] = useState<Record<string, string[]>>({});
+  // wash / vignette の見た目制御用フラグ。
   const [hovering, setHovering] = useState(false);
   const hoverTimer = useRef<number | null>(null);
   const paletteTimer = useRef<number | null>(null);
@@ -399,6 +445,7 @@ export function WorkPage() {
   const clock = useJstClock();
 
   useEffect(() => {
+    // ページ離脱時にタイマーを残さないように後始末する。
     return () => {
       if (hoverTimer.current) {
         window.clearTimeout(hoverTimer.current);
@@ -413,6 +460,7 @@ export function WorkPage() {
   useEffect(() => {
     let cancelled = false;
 
+    // 先に画像ごとの色を抽出しておき、hover 時にすぐ背景へ反映できるようにする。
     projects.forEach((project) => {
       if (!project.img) {
         return;
@@ -454,6 +502,8 @@ export function WorkPage() {
 
     activeProject.current = project.idx;
     setHovering(true);
+
+    // 少し遅らせて色を切り替えることで、hover の入りを滑らかに見せる。
     paletteTimer.current = window.setTimeout(() => {
       const palette = imagePalettes[project.idx] ?? project.palette;
       setActivePalette(palette);
@@ -466,11 +516,13 @@ export function WorkPage() {
     }
 
     activeProject.current = null;
+    // pointer が外れた瞬間ではなく、少し遅れて演出を戻す。
     hoverTimer.current = window.setTimeout(() => {
       setHovering(false);
     }, 300);
   }
 
+  // CSS のカスタムプロパティへ流し込んで、背景演出側で4色を受け取る。
   const gradientStyle = {
     "--wash-1": activePalette[0],
     "--wash-2": activePalette[1],
@@ -479,56 +531,102 @@ export function WorkPage() {
   } as CSSProperties;
 
   return (
-    <div className={["work-root", hovering ? "is-hovering" : ""].join(" ")}>
-      <div className="work-gradient-stage" aria-hidden="true" style={gradientStyle}>
-        <div className="work-wash work-wash-1" />
-        <div className="work-wash work-wash-2" />
-        <div className="work-wash work-wash-3" />
-        <div className="work-wash work-wash-4" />
-        <div className="work-vignette" />
+    <div
+      className={cn(
+        styles.root,
+        hovering && styles.isHovering,
+        "relative min-h-screen overflow-x-hidden font-[var(--font-body)] text-text",
+      )}
+    >
+      <div
+        className={cn(styles.gradientStage, "pointer-events-none fixed inset-0 z-0 overflow-hidden")}
+        aria-hidden="true"
+        style={gradientStyle}
+      >
+        <div
+          className={cn(
+            styles.wash,
+            styles.wash1,
+            "absolute -left-[18%] -top-[24%] h-[min(980px,82vw)] w-[min(980px,82vw)]",
+          )}
+        />
+        <div
+          className={cn(
+            styles.wash,
+            styles.wash2,
+            "absolute right-[2%] top-[14%] h-[min(460px,42vw)] w-[min(460px,42vw)]",
+          )}
+        />
+        <div
+          className={cn(
+            styles.wash,
+            styles.wash3,
+            "absolute bottom-[-24%] left-[36%] h-[min(760px,58vw)] w-[min(760px,58vw)]",
+          )}
+        />
+        <div
+          className={cn(
+            styles.wash,
+            styles.wash4,
+            "absolute bottom-[16%] right-[24%] h-[min(280px,24vw)] w-[min(280px,24vw)]",
+          )}
+        />
+        <div className={cn(styles.vignette, "absolute inset-0 z-[2]")} />
       </div>
 
-      <div className="work-page">
-        <header className="work-nav">
-          <div className="work-brand">
-            <div className="work-logo">
+      <div className="relative z-[1]">
+        <header
+          className={cn(
+            styles.nav,
+            "sticky top-0 z-50 flex items-center justify-between gap-7 px-10 py-5 max-[900px]:px-5 max-[900px]:py-4",
+          )}
+        >
+          <div className="flex min-w-0 items-baseline gap-2">
+            <div className={cn(styles.logo, "shrink-0 text-[18px] font-bold")}>
               soh okano<span>.</span>
             </div>
-            <div className="work-role">UI / UX Designer · Tokyo</div>
+            <div className="whitespace-nowrap font-[var(--font-label)] text-[10px] uppercase tracking-[0.12em] text-muted max-[1100px]:hidden">
+              UI / UX Designer · Tokyo
+            </div>
           </div>
 
-          <nav className="work-main-nav" aria-label="Primary">
-            <a href="#">
-              <span>01</span>Index
+          <nav className="flex items-center gap-7 max-[1100px]:gap-4 max-[900px]:hidden" aria-label="Primary">
+            <a className={cn(styles.navLink, navLinkClassName)} href="#">
+              <span className="text-[10px]">01</span>Index
             </a>
-            <a className="is-active" href="#">
-              <span>02</span>Work
+            <a className={cn(styles.navLink, styles.navLinkActive, navLinkClassName)} href="#">
+              <span className="text-[10px]">02</span>Work
             </a>
-            <a href="#">
-              <span>03</span>About
+            <a className={cn(styles.navLink, navLinkClassName)} href="#">
+              <span className="text-[10px]">03</span>About
             </a>
-            <a href="#">
-              <span>04</span>Journal
+            <a className={cn(styles.navLink, navLinkClassName)} href="#">
+              <span className="text-[10px]">04</span>Journal
             </a>
-            <a href="#">
-              <span>05</span>Contact
+            <a className={cn(styles.navLink, navLinkClassName)} href="#">
+              <span className="text-[10px]">05</span>Contact
             </a>
           </nav>
 
-          <div className="work-nav-right">
-            <span className="work-clock">{clock}</span>
-            <span className="work-availability">
+          <div className="flex shrink-0 items-center gap-5 font-[var(--font-label)] text-[10px] text-muted">
+            <span className="whitespace-nowrap max-[520px]:hidden">{clock}</span>
+            <span className={cn(styles.availability, "flex items-center gap-2 whitespace-nowrap max-[900px]:hidden")}>
               <span />
               Available · Q3 2026
             </span>
           </div>
         </header>
 
-        <div className="work-filterbar">
-          <div className="work-chips">
+        <div
+          className={cn(
+            styles.filterbar,
+            "sticky top-16 z-40 flex items-center justify-between gap-5 overflow-x-auto px-10 py-6 max-[900px]:top-14 max-[900px]:items-start max-[900px]:px-5 max-[900px]:py-4",
+          )}
+        >
+          <div className="flex shrink-0 flex-wrap gap-2 max-[900px]:flex-nowrap">
             {chips.map(([label, count]) => (
               <button
-                className={["work-chip", activeChip === label ? "is-active" : ""].join(" ")}
+                className={cn(styles.chip, chipClassName, activeChip === label && styles.chipActive)}
                 key={label}
                 onClick={() => setActiveChip(label)}
                 type="button"
@@ -537,33 +635,30 @@ export function WorkPage() {
               </button>
             ))}
           </div>
-          <div className="work-view-toggle">
+          <div className="flex shrink-0 items-center gap-3 font-[var(--font-label)] text-[12px] uppercase tracking-[0.08em] text-muted max-[900px]:hidden">
             <span>Sort</span>
-            <span className="work-sort">Recent ↓</span>
+            <span className={cn(styles.sort, "rounded-full px-3 py-2")}>Recent ↓</span>
           </div>
         </div>
 
-        <main className="work-main">
-          <section className="work-bento" aria-label="Selected work">
+        <main className="p-[120px] max-[1100px]:px-10 max-[1100px]:py-20 max-[900px]:px-4 max-[900px]:pb-4 max-[900px]:pt-6">
+          <section
+            className="grid grid-cols-12 auto-rows-auto items-start gap-x-6 gap-y-10 max-[900px]:grid-cols-6 max-[900px]:gap-x-3 max-[900px]:gap-y-7"
+            aria-label="Selected work"
+          >
+            {/* カードごとに palette を切り替えながら、必要なら詳細ページへの導線も付ける。 */}
             {projects.map((project) => {
               const palette = imagePalettes[project.idx] ?? project.palette;
               const cardStyle = {
                 "--c1": palette[0],
                 "--c2": palette[1],
               } as CSSProperties;
+              const cardClasses = cn(styles.cell, cardClassName, sizeClassNames[project.size]);
 
-              return (
-                <article
-                  className={`work-cell work-cell--${project.size}`}
-                  key={project.idx}
-                  onBlur={releasePalette}
-                  onFocus={() => activateProject(project)}
-                  onMouseEnter={() => activateProject(project)}
-                  onMouseLeave={releasePalette}
-                  style={cardStyle}
-                  tabIndex={0}
-                >
-                  <div className="work-swatch">
+              // 記事リンクの有無にかかわらず、カード本体の見た目は共通化しておく。
+              const cardBody = (
+                <>
+                  <div className={cn(styles.swatch, "relative aspect-[3/2] w-full overflow-hidden")}>
                     {project.img ? (
                       <Image
                         alt={stripTags(project.en)}
@@ -575,13 +670,20 @@ export function WorkPage() {
                     ) : null}
                   </div>
 
-                  <div className="work-info">
-                    <div className="work-line">
-                      <span className="work-index">
+                  <div className={cn(styles.info, "flex flex-col gap-2 px-[2px] pb-1 pt-[2px]")}>
+                    <div className="flex items-center justify-between font-[var(--font-label)] text-[10px] uppercase tracking-[0.1em] text-muted">
+                      <span className={cn(styles.index, "tracking-[0]")}>
                         {project.idx} · {project.year}
                       </span>
-                      <span className="work-arrow" aria-hidden="true">
+                      <span
+                        className={cn(
+                          styles.arrow,
+                          "inline-flex h-[22px] w-[22px] items-center justify-center",
+                        )}
+                        aria-hidden="true"
+                      >
                         <svg
+                          className="h-[10px] w-[10px]"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -591,22 +693,60 @@ export function WorkPage() {
                         </svg>
                       </span>
                     </div>
-                    <h3 dangerouslySetInnerHTML={{ __html: project.en }} />
-                    <div className="work-jp-title">{project.jp}</div>
-                    <div className="work-tags">
+                    <h3 className={cardTitleClassName} dangerouslySetInnerHTML={{ __html: project.en }} />
+                    <div className="text-[12px] leading-[1.8] text-dim">{project.jp}</div>
+                    <div className="mt-1 flex flex-wrap gap-1">
                       {project.tags.map((tag) => (
-                        <span key={tag}>{tag}</span>
+                        <span
+                          className="rounded-full border border-border px-2 py-1 font-[var(--font-label)] text-[12px] uppercase tracking-[0.12em] text-muted"
+                          key={tag}
+                        >
+                          {tag}
+                        </span>
                       ))}
                     </div>
                   </div>
+                </>
+              );
+
+              // 詳細ページがあるカードだけ Link として描画する。
+              if (project.href) {
+                return (
+                  <Link
+                    className={cardClasses}
+                    href={project.href}
+                    key={project.idx}
+                    onBlur={releasePalette}
+                    onFocus={() => activateProject(project)}
+                    onMouseEnter={() => activateProject(project)}
+                    onMouseLeave={releasePalette}
+                    style={cardStyle}
+                  >
+                    {cardBody}
+                  </Link>
+                );
+              }
+
+              return (
+                <article
+                  className={cardClasses}
+                  key={project.idx}
+                  onBlur={releasePalette}
+                  onFocus={() => activateProject(project)}
+                  onMouseEnter={() => activateProject(project)}
+                  onMouseLeave={releasePalette}
+                  style={cardStyle}
+                  tabIndex={0}
+                >
+                  {cardBody}
                 </article>
               );
             })}
           </section>
         </main>
 
-        <footer className="work-footer">
-          <div className="work-footer-bottom">
+        <footer className={cn(styles.footer, "mt-10 px-10 pb-10 pt-20 max-[900px]:px-5 max-[900px]:pb-8 max-[900px]:pt-16")}>
+          <div className="flex justify-between font-[var(--font-label)] text-[12px] uppercase tracking-[0.12em] text-muted">
             <span>© 2020 — 2026 · soh okano · all rights reserved</span>
           </div>
         </footer>

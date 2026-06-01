@@ -34,10 +34,10 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-bg px-5 py-10 text-text">
       <div className="w-full max-w-sm rounded-card border border-border bg-bg2 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold leading-tight">
+          <h1 className="text-3xl font-semibold leading-[1.2]">
             Password Required
           </h1>
-          <p className="mt-3 text-sm leading-6 text-dim">
+          <p className="mt-3 text-sm leading-[1.8] text-dim">
             閲覧するにはパスワードを入力してください。
           </p>
         </div>

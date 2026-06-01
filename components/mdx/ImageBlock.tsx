@@ -20,7 +20,7 @@ export function ImageBlock({ src, alt, width, height, caption }: ImageBlockProps
         width={width}
       />
       {caption ? (
-        <figcaption className="border-t border-border px-4 py-3 text-sm leading-6 text-dim">
+        <figcaption className="border-t border-border px-4 py-3 text-sm leading-[1.8] text-dim">
           {caption}
         </figcaption>
       ) : null}
