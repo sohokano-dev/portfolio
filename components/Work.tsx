@@ -55,7 +55,8 @@ const defaultPalette = [
 ];
 
 // hover 直後に即切り替えず、少しだけ間を置いて背景演出を滑らかに見せる。
-const PALETTE_HOVER_DELAY_MS = 180;
+// hover 演出の入りだけ少し待たせて、背景色の切り替わりを唐突に見せない。
+const PALETTE_HOVER_DELAY_MS = 200;
 
 // 一覧カードの表示内容。詳細ページがあるものだけ `href` を持たせる。
 const projects: Project[] = [
@@ -391,7 +392,7 @@ const sizeClassNames = {
 } as const;
 
 const navLinkClassName =
-  "flex items-center gap-2 text-[14px] transition-colors";
+  "flex items-center gap-2 text-[14px] transition-colors duration-200";
 
 const chipClassName =
   "flex items-center gap-2 whitespace-nowrap px-4 py-2 text-[12px] uppercase tracking-[0.12em]";
