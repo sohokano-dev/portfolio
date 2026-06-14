@@ -1,0 +1,65 @@
+import { Gallery } from "@/components/mdx/Gallery";
+import { ImageBlock } from "@/components/mdx/ImageBlock";
+
+{/* H1 is used once, only for the project title. */}
+# Project Title
+
+プロジェクトの概要を1〜2文で書きます。誰に向けて、どんな体験や成果物を作ったのかを短くまとめます。
+
+## Overview
+
+背景、課題、担当範囲、設計の方向性などをここに書きます。読み手がプロジェクトの輪郭をすぐ掴めるようにします。
+
+### Role
+
+- Direction
+- UI design
+- Visual design
+
+### Process
+
+1. Research
+2. Design
+3. Delivery
+
+<ImageBlock
+  src="/images/work/example.jpg"
+  alt="Project main visual"
+  width={1200}
+  height={800}
+  variant="main"
+/>
+
+## Gallery
+
+複数の画面、グラフィック、アウトプットを並べる場合に使います。
+
+<Gallery
+  images={[
+    {
+      src: "/images/work/example-01.jpg",
+      alt: "Project image 1",
+      width: 1200,
+      height: 800,
+    },
+    {
+      src: "/images/work/example-02.jpg",
+      alt: "Project image 2",
+      width: 1200,
+      height: 800,
+    },
+  ]}
+/>
+
+## Project Data
+
+|  |  |
+| --- | --- |
+| Year | 2026 |
+| Role | 1. Direction, 2. UI design, 3. Visual design |
+| Output | Website / Visual / Prototype |
+| Tools | - Figma, - Photoshop, - After Effects |
+
+## Notes
+
+補足情報、制作期間、使用ツール、リンクなどがあればここに書きます。

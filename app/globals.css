@@ -61,6 +61,22 @@
 }
 
 @layer utilities {
+  .work-mdx > :where(h1, h2, h3, p, ul, ol, table) {
+    grid-column: span 4 / span 4;
+  }
+
+  @media (min-width: 640px) {
+    .work-mdx > :where(h1, h2, h3, p, ul, ol, table) {
+      grid-column: span 8 / span 8;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .work-mdx > :where(h1, h2, h3, p, ul, ol, table) {
+      grid-column: 3 / span 8;
+    }
+  }
+
   .scrollbar-none {
     scrollbar-width: none;
   }
