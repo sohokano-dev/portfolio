@@ -1,0 +1,316 @@
+@property --wash-1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.65 0.16 70);
+}
+
+@property --wash-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.55 0.18 45);
+}
+
+@property --wash-3 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.45 0.14 250);
+}
+
+@property --wash-4 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.7 0.18 30);
+}
+
+.root {
+  background: transparent;
+}
+
+.gradientStage {
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, oklch(0.14 0.02 260), transparent 54%),
+    #111827;
+  transition:
+    opacity 280ms ease,
+    --wash-1 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    --wash-2 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    --wash-3 1600ms cubic-bezier(0.22, 1, 0.36, 1),
+    --wash-4 1600ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 600ms ease;
+}
+
+.gradientStageVisible {
+  opacity: 1;
+}
+
+.wash {
+  border-radius: 48% 52% 44% 56% / 44% 48% 52% 56%;
+  filter: blur(88px);
+  mix-blend-mode: screen;
+  opacity: 0.42;
+  transition:
+    --wash-1 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    --wash-2 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    --wash-3 1600ms cubic-bezier(0.22, 1, 0.36, 1),
+    --wash-4 1600ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 1100ms ease,
+    transform 900ms ease;
+  will-change: transform, opacity;
+}
+
+.gradientStageActive .wash {
+  opacity: 0.78;
+}
+
+.wash1 {
+  background: radial-gradient(ellipse at center, var(--wash-1), transparent 65%);
+  animation: drift1 10.8s ease-in-out infinite alternate;
+}
+
+.wash2 {
+  background: radial-gradient(ellipse at center, var(--wash-2), transparent 65%);
+  animation: drift2 7.1s ease-in-out infinite alternate;
+}
+
+.wash3 {
+  background: radial-gradient(ellipse at center, var(--wash-3), transparent 65%);
+  animation: drift3 10.9s ease-in-out infinite alternate;
+}
+
+.wash4 {
+  background: radial-gradient(ellipse at center, var(--wash-4), transparent 65%);
+  animation: drift4 6.4s ease-in-out infinite alternate;
+}
+
+.noiseOverlay {
+  display: block;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: soft-light;
+  opacity: 0.12;
+  transform-origin: center;
+}
+
+.nav {
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.logo {
+  color: #f3f4f6;
+}
+
+.logo span {
+  color: #9ca3af;
+}
+
+.navLink {
+  color: #9ca3af;
+  transition: color 200ms ease;
+}
+
+.navLink:hover {
+  color: #f3f4f6;
+}
+
+.navLink span {
+  color: #9ca3af;
+}
+
+.navLinkActive {
+  color: #f3f4f6;
+}
+
+.navLinkActive::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffb519;
+  content: "";
+}
+
+.filterbar {
+  /* Removed background and border to let it sit flush with gallery */
+  scrollbar-width: none;
+}
+
+.filterbar::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  border: 0;
+  border-radius: 16px;
+  corner-shape: squircle;
+  background: rgb(0 0 0 / 0.1);
+  color: #f3f4f6;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.chip:hover {
+  background: rgb(0 0 0 / 0.5);
+  color: #f3f4f6;
+}
+
+.chip sup {
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0;
+  vertical-align: super;
+  color: #9ca3af;
+}
+
+.chipActive {
+  background: rgb(0 0 0 / 0.5);
+  color: #f3f4f6;
+}
+
+.chip span {
+  opacity: 0.6;
+}
+
+.sort {
+  border: 1px solid #ffffff15;
+  color: #9ca3af;
+}
+
+.cell {
+  cursor: pointer;
+  isolation: isolate;
+  outline: none;
+  transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.motionOff .chip,
+.motionOff .cell {
+  transition-duration: 150ms;
+}
+
+.cell:hover,
+.cell:focus-visible {
+  transform: translateY(-4px);
+}
+
+.cell:focus-visible {
+  outline: revert;
+  outline-offset: 2px;
+}
+
+.swatch {
+  border: 1px solid #ffffff15;
+  border-radius: 48px;
+  corner-shape: squircle;
+  transition:
+    border-color 400ms ease,
+    box-shadow 400ms ease;
+}
+
+.motionOff .swatch {
+  transition-duration: 150ms;
+}
+
+.cell:hover .swatch,
+.cell:focus-visible .swatch {
+  border-color: #ffffff20;
+  box-shadow: 0 30px 60px -20px #00000099;
+}
+
+.swatch img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    filter 600ms ease,
+    transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.motionOff .swatch img {
+  transition-duration: 150ms;
+}
+
+.info {
+  color: #f3f4f6;
+}
+
+.arrow {
+  border: 1px solid #ffffff20;
+  color: #9ca3af;
+  transition:
+    background 300ms ease,
+    border-color 300ms ease,
+    color 300ms ease,
+    transform 300ms ease;
+}
+
+.cell:hover .arrow,
+.cell:focus-visible .arrow {
+  border-color: #f3f4f6;
+  background: #f3f4f6;
+  color: #030712;
+  transform: none;
+}
+
+.footer {
+  border-top: 1px solid #ffffff15;
+  color: #9ca3af;
+}
+
+@keyframes drift1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(12%, 4%) scale(1.22);
+  }
+
+  100% {
+    transform: translate(3%, 12%) scale(1.09);
+  }
+}
+
+@keyframes drift2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(15%, 2%) scale(1.18);
+  }
+
+  100% {
+    transform: translate(-2%, -14%) scale(1.08);
+  }
+}
+
+@keyframes drift3 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-18%, -2%) scale(1.08);
+  }
+
+  100% {
+    transform: translate(8%, 8%) scale(1.24);
+  }
+}
+
+@keyframes drift4 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(10%, 6%) scale(1.12);
+  }
+
+  100% {
+    transform: translate(12%, -9%) scale(1.16);
+  }
+}
