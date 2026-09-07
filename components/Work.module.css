@@ -23,19 +23,25 @@
 }
 
 .root {
-  background: #030712;
+  background: transparent;
 }
 
 .gradientStage {
+  opacity: 0;
   background:
     radial-gradient(ellipse at 50% 0%, oklch(0.14 0.02 260), transparent 54%),
-    #030712;
+    #111827;
   transition:
+    opacity 280ms ease,
     --wash-1 1200ms cubic-bezier(0.22, 1, 0.36, 1),
     --wash-2 1200ms cubic-bezier(0.22, 1, 0.36, 1),
     --wash-3 1600ms cubic-bezier(0.22, 1, 0.36, 1),
     --wash-4 1600ms cubic-bezier(0.22, 1, 0.36, 1),
     background 600ms ease;
+}
+
+.gradientStageVisible {
+  opacity: 1;
 }
 
 .wash {
@@ -53,7 +59,7 @@
   will-change: transform, opacity;
 }
 
-.root.isHovering .wash {
+.gradientStageActive .wash {
   opacity: 0.78;
 }
 
@@ -77,16 +83,13 @@
   animation: drift4 6.4s ease-in-out infinite alternate;
 }
 
-.vignette {
-  background:
-    radial-gradient(ellipse at center, transparent 0%, transparent 40%, oklch(0.08 0.01 260 / 0.55) 100%),
-    linear-gradient(180deg, transparent 0%, oklch(0.08 0.01 260 / 0.25) 100%);
-  opacity: 0;
-  transition: opacity 600ms ease;
-}
-
-.root.isHovering .vignette {
-  opacity: 1;
+.noiseOverlay {
+  display: block;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: soft-light;
+  opacity: 0.12;
+  transform-origin: center;
 }
 
 .nav {
@@ -99,7 +102,7 @@
 }
 
 .logo span {
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .navLink {
@@ -112,7 +115,7 @@
 }
 
 .navLink span {
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .navLinkActive {
@@ -129,8 +132,6 @@
 
 .filterbar {
   /* Removed background and border to let it sit flush with gallery */
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   scrollbar-width: none;
 }
 
@@ -139,31 +140,32 @@
 }
 
 .chip {
-  border: 1px solid #ffffff15;
-  border-radius: 9999px;
-  background: transparent;
-  color: #9ca3af;
+  border: 0;
+  border-radius: 16px;
+  corner-shape: squircle;
+  background: rgb(0 0 0 / 0.1);
+  color: #f3f4f6;
   transition:
-    background 200ms ease,
-    border-color 200ms ease,
-    color 200ms ease;
+    background 150ms ease,
+    color 150ms ease;
 }
 
 .chip:hover {
-  border-color: #ffffff20;
+  background: rgb(0 0 0 / 0.5);
   color: #f3f4f6;
 }
 
 .chip sup {
   font-size: 10px;
   line-height: 1;
+  letter-spacing: 0;
   vertical-align: super;
+  color: #9ca3af;
 }
 
 .chipActive {
-  border-color: #f3f4f6;
-  background: #f3f4f6;
-  color: #030712;
+  background: rgb(0 0 0 / 0.5);
+  color: #f3f4f6;
 }
 
 .chip span {
@@ -176,11 +178,15 @@
 }
 
 .cell {
-  border-radius: 18px;
   cursor: pointer;
   isolation: isolate;
   outline: none;
-  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.motionOff .chip,
+.motionOff .cell {
+  transition-duration: 150ms;
 }
 
 .cell:hover,
@@ -195,10 +201,15 @@
 
 .swatch {
   border: 1px solid #ffffff15;
-  border-radius: 18px;
+  border-radius: 48px;
+  corner-shape: squircle;
   transition:
-    border-color 300ms ease,
-    box-shadow 300ms ease;
+    border-color 400ms ease,
+    box-shadow 400ms ease;
+}
+
+.motionOff .swatch {
+  transition-duration: 150ms;
 }
 
 .cell:hover .swatch,
@@ -217,12 +228,12 @@
     transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.info {
-  color: #f3f4f6;
+.motionOff .swatch img {
+  transition-duration: 150ms;
 }
 
-.index::before {
-  content: "N°";
+.info {
+  color: #f3f4f6;
 }
 
 .arrow {
@@ -241,12 +252,6 @@
   background: #f3f4f6;
   color: #030712;
   transform: none;
-}
-
-.info h3 em {
-  color: #f3f4f6;
-  font-style: normal;
-  font-weight: 500;
 }
 
 .footer {

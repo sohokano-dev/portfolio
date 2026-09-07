@@ -43,7 +43,7 @@ export default function LoginPage() {
         </div>
 
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-          <label className="text-xs uppercase text-text-50" htmlFor="password">
+          <label className="text-xs uppercase text-text-70" htmlFor="password">
             Password
           </label>
           <input
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 setError("");
               }
             }}
-            className="h-11 rounded-lg border border-border bg-neutral-950 px-3 text-text-100 outline-none transition-colors placeholder:text-text-50 focus:border-neutral-700"
+            className="h-11 rounded-lg border border-border bg-neutral-950 px-3 text-text-100 outline-none transition-colors placeholder:text-text-70 focus:border-neutral-700"
             placeholder="Enter password"
           />
           {error ? (

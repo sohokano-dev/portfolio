@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect } from "react";
+import { useWorkBackground } from "../PageTransitionProvider";
 import { extractImagePalette } from "./palette";
-import { WorkGradientBackground } from "./WorkGradientBackground";
 import { defaultPalette, type WorkProject } from "./workProjects";
 
 type WorkDetailBackgroundProps = {
@@ -10,12 +10,13 @@ type WorkDetailBackgroundProps = {
 };
 
 export function WorkDetailBackground({ project }: WorkDetailBackgroundProps) {
-  const [palette, setPalette] = useState(project?.palette ?? defaultPalette);
+  const { setActive, setPalette } = useWorkBackground();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let cancelled = false;
     const fallbackPalette = project?.palette ?? defaultPalette;
 
+    setActive(true);
     setPalette(fallbackPalette);
 
     if (project?.img) {
@@ -33,7 +34,7 @@ export function WorkDetailBackground({ project }: WorkDetailBackgroundProps) {
     return () => {
       cancelled = true;
     };
-  }, [project]);
+  }, [project, setActive, setPalette]);
 
-  return <WorkGradientBackground palette={palette} />;
+  return null;
 }

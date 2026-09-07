@@ -1,7 +1,7 @@
 import { readdirSync } from "node:fs";
 import path from "node:path";
-import type { ComponentType } from "react";
 import Link from "next/link";
+import type { ComponentType } from "react";
 import { notFound } from "next/navigation";
 import styles from "@/components/Work.module.css";
 import { workMarkdownClassName } from "@/components/mdx/markdownStyles";
@@ -46,12 +46,10 @@ export default async function WorkPage({ params }: WorkPageProps) {
   const project = getWorkProjectBySlug(params.slug);
 
   return (
-    <div
-      className={`${styles.root} ${styles.isHovering} relative min-h-screen overflow-x-hidden text-text-100`}
-    >
+    <div className={`${styles.root} relative min-h-screen overflow-x-hidden text-text-100`}>
       <WorkDetailBackground project={project} />
       <Link
-        className="fixed left-5 top-[78px] z-40 inline-flex text-sm leading-none text-text-70 transition-colors hover:text-text-100 max-[640px]:top-[70px]"
+        className="fixed left-5 top-[68px] z-[110] inline-flex text-sm leading-none text-text-100 transition-opacity hover:opacity-80 max-[640px]:top-[68px]"
         href="/"
       >
         ← Back

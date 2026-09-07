@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageTransitionProvider } from "@/components/PageTransitionProvider";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
@@ -15,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <SiteHeader />
-        {children}
+        <PageTransitionProvider>
+          <SiteHeader />
+          {children}
+        </PageTransitionProvider>
       </body>
     </html>
   );

@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { useWorkBackground } from "./PageTransitionProvider";
 import styles from "./Work.module.css";
-import { WorkGradientBackground } from "./work/WorkGradientBackground";
 import { workContentMaxClassName, workGridClassName } from "./work/layout";
 import { extractImagePalette } from "./work/palette";
-import { defaultPalette, projects, type WorkProject } from "./work/workProjects";
+import { projects, type WorkProject } from "./work/workProjects";
 
 // フィルタ UI の表示用ラベル。現状は見た目用で、絞り込みロジック自体はまだ持っていない。
 const chips = [
@@ -39,12 +39,12 @@ const sizeClassNames = {
 } as const;
 
 const chipClassName =
-  "flex items-center gap-2 whitespace-nowrap px-4 py-2 text-[12px] uppercase tracking-[0.12em]";
+  "flex items-center gap-1 whitespace-nowrap px-3 py-2 text-[12px] uppercase tracking-[0.12em]";
 
 const cardTitleClassName =
   "text-[22px] font-medium leading-[1.2] text-text-100";
 
-const cardClassName = "col-span-4 flex flex-col gap-3";
+const cardClassName = "col-span-4 flex flex-col gap-4";
 
 // 条件付き className を見やすく組み立てるための小さなヘルパー。
 function cn(...classNames: Array<string | false | null | undefined>) {
@@ -52,10 +52,11 @@ function cn(...classNames: Array<string | false | null | undefined>) {
 }
 
 export function Work() {
+  const { auroraAnimated, palette: currentPalette, setActive, setPalette } = useWorkBackground();
   // 現状は見た目だけだが、将来的にフィルタを有効化しやすいよう state 化している。
   const [activeChip, setActiveChip] = useState("All");
   // 背景の wash 演出に流し込む現在の4色。
-  const [activePalette, setActivePalette] = useState(defaultPalette);
+  const [activePalette, setActivePalette] = useState(currentPalette);
   // 画像から後追いで抽出したパレットをカード ID ごとに保持する。
   const [imagePalettes, setImagePalettes] = useState<Record<string, string[]>>({});
   // wash / vignette の見た目制御用フラグ。
@@ -63,6 +64,7 @@ export function Work() {
   const hoverTimer = useRef<number | null>(null);
   const paletteTimer = useRef<number | null>(null);
   const activeProject = useRef<string | null>(null);
+  const paletteRequests = useRef(new Map<string, Promise<string[] | null>>());
 
   useEffect(() => {
     // ページ離脱時にタイマーを残さないように後始末する。
@@ -77,39 +79,10 @@ export function Work() {
     };
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    // 先に画像ごとの色を抽出しておき、hover 時にすぐ背景へ反映できるようにする。
-    projects.forEach((project) => {
-      if (!project.img) {
-        return;
-      }
-
-      extractImagePalette(project.img)
-        .then((palette) => {
-          if (cancelled || !palette) {
-            return;
-          }
-
-          setImagePalettes((current) => ({
-            ...current,
-            [project.idx]: palette,
-          }));
-
-          if (activeProject.current === project.idx) {
-            setActivePalette(palette);
-          }
-        })
-        .catch(() => {
-          // Fall back to the hand-tuned palette if browser canvas extraction fails.
-        });
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  useLayoutEffect(() => {
+    setPalette(activePalette);
+    setActive(hovering);
+  }, [activePalette, hovering, setActive, setPalette]);
 
   function activateProject(project: WorkProject) {
     if (hoverTimer.current) {
@@ -125,8 +98,25 @@ export function Work() {
 
     // 少し遅らせて色を切り替えることで、hover の入りを滑らかに見せる。
     paletteTimer.current = window.setTimeout(() => {
-      const palette = imagePalettes[project.idx] ?? project.palette;
-      setActivePalette(palette);
+      const cachedPalette = imagePalettes[project.idx];
+      setActivePalette(cachedPalette ?? project.palette);
+
+      if (!cachedPalette && project.img && !paletteRequests.current.has(project.idx)) {
+        const request = extractImagePalette(project.img).catch(() => null);
+        paletteRequests.current.set(project.idx, request);
+        request.then((palette) => {
+          if (!palette) return;
+
+          setImagePalettes((current) => ({
+            ...current,
+            [project.idx]: palette,
+          }));
+
+          if (activeProject.current === project.idx) {
+            setActivePalette(palette);
+          }
+        });
+      }
     }, PALETTE_HOVER_DELAY_MS);
   }
 
@@ -146,12 +136,10 @@ export function Work() {
     <div
       className={cn(
         styles.root,
-        hovering && styles.isHovering,
+        !auroraAnimated && styles.motionOff,
         "relative min-h-screen overflow-x-hidden text-text-100",
       )}
     >
-      <WorkGradientBackground palette={activePalette} />
-
       <div className="relative z-[1]">
         <main className="p-[120px] max-[1024px]:px-10 max-[1024px]:py-20 max-[640px]:px-5 max-[640px]:pb-4 max-[640px]:pt-6">
           {/* Filter placed above the gallery */}
@@ -201,40 +189,20 @@ export function Work() {
                     ) : null}
                   </div>
 
-                  <div className={cn(styles.info, "flex flex-col gap-2 px-[2px] pb-1 pt-[2px]")}>
-                    <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.1em] text-text-50">
-                      <span className={cn(styles.index, "tracking-[0]")}>
-                        {project.idx} · {project.year}
-                      </span>
-                      <span
-                        className={cn(
-                          styles.arrow,
-                          "inline-flex h-[22px] w-[22px] items-center justify-center",
-                        )}
-                        aria-hidden="true"
-                      >
-                        <svg
-                          className="h-[10px] w-[10px]"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                        >
-                          <path d="M5 12h14M13 6l6 6-6 6" />
-                        </svg>
-                      </span>
-                    </div>
-                    <h3 className={cardTitleClassName} dangerouslySetInnerHTML={{ __html: project.en }} />
-                    <div className="text-[12px] leading-[1.8] text-text-70">{project.jp}</div>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {project.tags.map((tag) => (
-                        <span
-                          className="rounded-full border border-border px-2 py-1 text-[12px] uppercase tracking-[0.12em] text-text-50"
-                          key={tag}
-                        >
-                          {tag}
+                  <div className={cn(styles.info, "flex flex-col gap-2 px-1")}>
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[10px] uppercase tracking-[0.12em] text-text-70">
+                        <span className={styles.index}>
+                          {`Nº${Number(project.idx)}`} · {project.year}
                         </span>
-                      ))}
+                      </div>
+                      <div className="mt-[2px] flex flex-col gap-0">
+                        <h3 className={cardTitleClassName} dangerouslySetInnerHTML={{ __html: project.en }} />
+                        <div className="text-[12px] leading-[1.8] text-text-70">{project.jp}</div>
+                      </div>
+                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.12em] text-text-70">
+                      {project.tags.join(" · ")}
                     </div>
                   </div>
                 </>
@@ -274,8 +242,8 @@ export function Work() {
           </section>
         </main>
 
-        <footer className={cn(styles.footer, "mt-10 px-10 pb-10 pt-20 max-[640px]:px-5 max-[640px]:pb-8 max-[640px]:pt-16")}>
-          <div className="flex justify-between text-[12px] uppercase tracking-[0.12em] text-text-50">
+        <footer className={cn(styles.footer, "p-5")}>
+          <div className="flex justify-between text-[12px] uppercase tracking-[0.12em] text-text-70">
             <span>© 2020 — 2026 · soh okano · all rights reserved</span>
           </div>
         </footer>
